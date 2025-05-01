@@ -2,7 +2,7 @@
 import { config } from "dotenv";
 
 // Load `.env.dev.local` or `.env.prod.local` based on NODE_ENV
-const environment = process.env.NODE_ENV || "dev";
+const environment = process.env.NODE_ENV;
 
 config({
   path: `.env.${environment}.local`,
