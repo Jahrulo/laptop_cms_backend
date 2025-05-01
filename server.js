@@ -11,7 +11,7 @@ app.use(express.json()); // parse incoming JSON requests
 app.use(express.urlencoded({ extended: true })); // parse URL-encoded requests
 
 // routes endpoints
-app.use("/api/v1/auth", authRouter); // use the auth router for authentication-related routes
+app.use("/api/v1/auth", authRouter);
 
 // root route
 app.get("/", (req, res) => {
