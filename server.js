@@ -1,8 +1,6 @@
 import express from "express";
-
+import { PORT, NODE_ENV } from "./config/env.config.js";
 const app = express(); // instantiate express
-
-const Port = 3000; // port number
 
 // root route
 app.get("/", (req, res) => {
@@ -11,9 +9,9 @@ app.get("/", (req, res) => {
 
 // start the server and listen on the specified port
 const startServer = () => {
-  app.listen(Port, () => {
+  app.listen(PORT, () => {
     console.log(
-      `✅Server is up and running on http://localhost:${Port} and on port ${Port} 💥`
+      `✅Server is up and running on http://localhost:${PORT} : in ${NODE_ENV} mode💥`
     );
   });
 };
