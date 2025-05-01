@@ -8,4 +8,11 @@ config({
   path: `.env.${environment}.local`,
 });
 
-export const { PORT, NODE_ENV, DATABASE_URL, JWT_SECRET, JWT_EXPIRATION } = process.env;
+export const {
+  PORT,
+  NODE_ENV,
+  DATABASE_URL,
+  JWT_SECRET,
+  JWT_EXPIRATION,
+  ALLOWED_ORIGINS,
+} = process.env;

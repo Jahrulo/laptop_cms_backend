@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 // user controller business logic with jwt
 import User from "../models/User.js";
 import { JWT_SECRET, JWT_EXPIRATION } from "../config/env.config.js";
@@ -85,11 +86,59 @@ export const signIn = async (req, res, next) => {
     // 4. Generate token
     const token = signToken(user._id);
 
+    // 5 store the token in cookie
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      maxAge: 24 * 60 * 60 * 7000, // 7 day
+    });
+
     // 5. Send response
     res.status(200).json({
       success: true,
       message: "User logged in successfully",
-      token,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const signOut = async (req, res, next) => {
+  try {
+    // Clear the cookie
+    res.clearCookie("token", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+    });
+
+    // Send response
+    res.status(200).json({
+      success: true,
+      message: "User logged out successfully",
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getUser = async (req, res, next) => {
+  try {
+    const user = req.user; // User is set in the Auth middleware
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
       user: {
         id: user._id,
         name: user.name,
