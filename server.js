@@ -14,7 +14,7 @@ const startServer = async () => {
 
   app.listen(PORT, () => {
     console.log(
-      `✅Server is up and running on http://localhost:${PORT} : in ${NODE_ENV} mode💥`
+      `✅ Server is up and running on http://localhost:${PORT} : in ${NODE_ENV} mode💥`
     );
   });
 };
