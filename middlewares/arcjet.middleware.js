@@ -3,7 +3,7 @@ import { isSpoofedBot } from "@arcjet/inspect";
 
 const arcjetMiddleware = async (req, res, next) => {
   try {
-    const decision = await arc.protect(req);
+    const decision = await arc.protect(req, { requested: 1 });
 
     // if decision is denied
     if (decision.isDenied()) {
