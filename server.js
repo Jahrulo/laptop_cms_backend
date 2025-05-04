@@ -6,6 +6,7 @@ import notFoundMiddleware from "./middlewares/notFound.middleware.js";
 import errorHandlerMiddleware from "./middlewares/error.middleware.js";
 import authRouter from "./routes/user.route.js"; // Import the auth router
 import cookieParser from "cookie-parser";
+import arcjetMiddleware from "./middlewares/arcjet.middleware.js";
 import cors from "cors";
 import swaggerUi from "swagger-ui-express";
 import swaggerJSDoc from "swagger-jsdoc";
@@ -17,6 +18,7 @@ const app = express(); // instantiate express
 app.use(express.json()); // parse incoming JSON requests
 app.use(express.urlencoded({ extended: true })); // parse URL-encoded requests
 app.use(cookieParser());
+app.use(arcjetMiddleware);
 
 // Enable CORS for origins from the environment variable
 const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(",") || ["*"];
