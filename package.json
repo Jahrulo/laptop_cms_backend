@@ -11,6 +11,8 @@
     "dev": "NODE_ENV=dev nodemon server.js"
   },
   "dependencies": {
+    "@arcjet/inspect": "^1.0.0-beta.6",
+    "@arcjet/node": "^1.0.0-beta.6",
     "bcryptjs": "^3.0.2",
     "cookie-parser": "~1.4.4",
     "cors": "^2.8.5",
