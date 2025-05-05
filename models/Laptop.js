@@ -13,8 +13,9 @@ const laptopSchema = new mongoose.Schema({
     enum: ["Available", "Distributed", "Needs_repair", "Decommissioned"],
     required: true,
   },
-  purchasedDate: {
-    type: Date,
+  purchaseDate: {
+    type: String,
+    required: [true, "Purchase data is required"]
   },
   notes: {
     type: String,
