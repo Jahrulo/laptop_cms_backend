@@ -17,4 +17,6 @@ export const {
   ALLOWED_ORIGINS,
   ARCJET_ENV,
   ARCJET_KEY,
+  SENDGRID_API_KEY,
+  EMAIL_FORM,
 } = process.env;

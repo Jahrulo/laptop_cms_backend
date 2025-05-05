@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Welcome to Laptop CMS</title>
+    <style>
+      body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #f7f7f7;
+        padding: 20px;
+        color: #333333;
+        line-height: 1.6;
+        margin: 0;
+      }
+      
+      .container {
+        background-color: white;
+        padding: 0;
+        border-radius: 8px;
+        max-width: 600px;
+        margin: auto;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+      }
+      
+      .header {
+        background-color: #2563eb;
+        padding: 30px 20px;
+        text-align: center;
+      }
+      
+      .header h1 {
+        color: #ffffff;
+        margin: 0;
+        font-size: 28px;
+        font-weight: 600;
+      }
+      
+      .content {
+        padding: 40px 30px;
+      }
+      
+      .content h2 {
+        margin-top: 0;
+        color: #1e3a8a;
+        font-size: 24px;
+        font-weight: 600;
+      }
+      
+      .content p {
+        margin-bottom: 25px;
+        font-size: 16px;
+      }
+      
+      .credentials-box {
+        background-color: #f8fafc;
+        border-radius: 6px;
+        padding: 20px;
+        margin-bottom: 25px;
+      }
+      
+      .credentials-box p {
+        margin: 0 0 10px 0;
+      }
+      
+      .credentials-box p:last-child {
+        margin-bottom: 0;
+      }
+      
+      .credentials-box strong {
+        color: #1e3a8a;
+      }
+      
+      .button-container {
+        text-align: center;
+        margin: 35px 0;
+      }
+      
+      .button {
+        background-color: #2563eb;
+        color: #ffffff;
+        text-decoration: none;
+        padding: 12px 30px;
+        border-radius: 4px;
+        font-weight: 600;
+        display: inline-block;
+        font-size: 16px;
+      }
+      
+      .footer {
+        background-color: #f1f5f9;
+        padding: 25px 30px;
+        text-align: center;
+        border-top: 1px solid #e2e8f0;
+      }
+      
+      .address {
+        margin: 0 0 15px 0;
+        font-size: 14px;
+        color: #64748b;
+      }
+      
+      .copyright {
+        margin: 0;
+        font-size: 13px;
+        color: #94a3b8;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>Laptop CMS</h1>
+      </div>
+      
+      <div class="content">
+        <h2>Welcome to Laptop CMS, <%= name %>!</h2>
+        
+        <p>Thank you for joining us. Your account has been successfully created. Here are your login credentials:</p>
+        
+        <div class="credentials-box">
+          <p><strong>Email:</strong> <%= email %></p>
+          <p><strong>Password:</strong> <%= password %></p>
+          <p><strong>Role:</strong> <%= role %></p>
+        </div>
+        
+        <p>For security reasons, please log in and change your password as soon as possible.</p>
+        
+        <div class="button-container">
+          <a href="https://laptops-cms.example.com/login" class="button">Log In Now</a>
+        </div>
+        
+        <p>If you have any questions, please don't hesitate to contact our support team.</p>
+      </div>
+      
+      <div class="footer">
+        <p class="address">
+          Laptop CMS, Inc.<br>
+          38 Savage Square, Kissy<br>
+          Freetown, SL
+        </p>
+        
+        <p class="copyright">
+          &copy; 2025 Laptop CMS. All rights reserved.
+        </p>
+      </div>
+    </div>
+  </body>
+</html>

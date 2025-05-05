@@ -15,14 +15,16 @@ const signToken = (userId) => {
 
 // ========== REGISTER  USER ==========
 export const signUp = async (req, res, next) => {
-  const session = await mongoose.startSession(); // Mongoose transaction
+  const session = await mongoose.startSession();
   session.startTransaction();
   try {
     const { name, email, password, role } = req.body;
 
     // 1. Check if user exists
-    const existingUser = await User.findOne({ email });
+    const existingUser = await User.findOne({ email }).session(session);
     if (existingUser) {
+      await session.abortTransaction();
+      session.endSession();
       return res.status(409).json({
         success: false,
         message: "User already exists",
@@ -39,24 +41,29 @@ export const signUp = async (req, res, next) => {
     // 4. Commit transaction
     await session.commitTransaction();
     session.endSession();
+
     // 5. Send response
     res.status(201).json({
       success: true,
       message: "User created successfully",
       token,
       user: {
-        id: user[0]._id,
-        name: user[0].name,
-        email: user[0].email,
-        role: user[0].role,
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
       },
     });
   } catch (error) {
-    await session.abortTransaction();
+    // Only abort if transaction is still active
+    if (session.inTransaction()) {
+      await session.abortTransaction();
+    }
     session.endSession();
     next(error);
   }
 };
+
 
 // ========== LOGIN USER ==========
 export const signIn = async (req, res, next) => {
