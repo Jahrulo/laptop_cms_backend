@@ -60,10 +60,18 @@ export const signUp = async (req, res, next) => {
       await session.abortTransaction();
     }
     session.endSession();
+    // Catch Mongoose validation errors
+    if (err.name === "ValidationError") {
+      const messages = Object.values(err.errors).map((err) => err.message);
+      return res.status(400).json({
+        success: false,
+        message: "Validation failed",
+        errors: messages,
+      });
+    }
     next(error);
   }
 };
-
 
 // ========== LOGIN USER ==========
 export const signIn = async (req, res, next) => {
@@ -111,8 +119,18 @@ export const signIn = async (req, res, next) => {
         role: user.role,
       },
     });
-  } catch (error) {
-    next(error);
+  } catch (err) {
+    // Catch Mongoose validation errors
+    if (err.name === "ValidationError") {
+      const messages = Object.values(err.errors).map((err) => err.message);
+      return res.status(400).json({
+        success: false,
+        message: "Validation failed",
+        errors: messages,
+      });
+    }
+    console.log(`🚨 Oops: ${err.message}`);
+    next(err.message);
   }
 };
 
@@ -153,7 +171,17 @@ export const getUser = async (req, res, next) => {
         role: user.role,
       },
     });
-  } catch (error) {
-    next(error);
+  } catch (err) {
+    // Catch Mongoose validation errors
+    if (err.name === "ValidationError") {
+      const messages = Object.values(err.errors).map((err) => err.message);
+      return res.status(400).json({
+        success: false,
+        message: "Validation failed",
+        errors: messages,
+      });
+    }
+    console.log(`🚨 Oops: ${err.message}`);
+    next(err.message);
   }
 };
