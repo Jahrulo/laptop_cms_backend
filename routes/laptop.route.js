@@ -11,7 +11,7 @@ const laptopRouter = Router();
 
 /**
  * @swagger
- * /laptops:
+ * /laptop/getLaptops:
  *   get:
  *     summary: Retrieve a list of laptops
  *     tags:
@@ -58,7 +58,7 @@ laptopRouter.get("/getLaptops", Auth, getLaptops);
 
 /**
  * @swagger
- * /addLaptop:
+ * /laptop/addLaptop:
  *   post:
  *     summary: Add a new laptop
  *     tags:
@@ -121,7 +121,7 @@ laptopRouter.post("/addLaptop", Auth, createLaptop);
 
 /**
  * @swagger
- * /updateLaptop/{id}:
+ * /laptop/updateLaptop/{id}:
  *   patch:
  *     summary: Update an existing laptop
  *     tags:
@@ -193,7 +193,7 @@ laptopRouter.patch("/updateLaptop/:id", Auth, updateLaptop);
 
 /**
  * @swagger
- * /deleteLaptop/{id}:
+ * /laptop/deleteLaptop/{id}:
  *   delete:
  *     summary: Delete a laptop
  *     tags:
