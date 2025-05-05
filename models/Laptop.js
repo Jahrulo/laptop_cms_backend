@@ -15,7 +15,7 @@ const laptopSchema = new mongoose.Schema({
   },
   purchaseDate: {
     type: String,
-    required: [true, "Purchase data is required"]
+    required: [true, "Purchase data is required"],
   },
   notes: {
     type: String,
