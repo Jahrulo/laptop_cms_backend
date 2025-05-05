@@ -31,15 +31,24 @@ const laptopRouter = Router();
  *                   id:
  *                     type: string
  *                     description: The laptop ID
- *                   name:
- *                     type: string
- *                     description: The laptop name
  *                   brand:
  *                     type: string
- *                     description: The laptop brand
- *                   price:
- *                     type: number
- *                     description: The laptop price
+ *                     description: The laptop brand name eg(Apple)
+ *                   model:
+ *                     type: string
+ *                     description: The laptop model
+ *                   serialNumber:
+ *                     type: string
+ *                     description: The laptop unique serial number
+*                   status:
+ *                     type: string
+ *                     description: Enums of (Available, Needs_repair, Distributed e.t.c)
+*                   purchaseDate:
+ *                     type: string
+ *                     description: Purchase date of the laptop
+  *                   note:
+ *                     type: string
+ *                     description: Condition of the laptop
  *       401:
  *         description: Unauthorized
  *       500:
@@ -63,18 +72,24 @@ laptopRouter.get("/getLaptops", Auth, getLaptops);
  *           schema:
  *             type: object
  *             properties:
- *               name:
- *                 type: string
- *                 description: The name of the laptop
- *                 example: MacBook Pro
- *               brand:
- *                 type: string
- *                 description: The brand of the laptop
- *                 example: Apple
- *               price:
- *                 type: number
- *                 description: The price of the laptop
- *                 example: 1999.99
+ *                   brand:
+ *                     type: string
+ *                     description: The laptop brand name eg(Apple)
+ *                   model:
+ *                     type: string
+ *                     description: The laptop model
+ *                   serialNumber:
+ *                     type: string
+ *                     description: The laptop unique serial number
+*                   status:
+ *                     type: string
+ *                     description: Enums of (Available, Needs_repair, Distributed e.t.c)
+*                   purchaseDate:
+ *                     type: string
+ *                     description: Purchase date of the laptop
+  *                   note:
+ *                     type: string
+ *                     description: Condition of the laptop
  *     responses:
  *       201:
  *         description: Laptop successfully created
@@ -127,15 +142,24 @@ laptopRouter.post("/addLaptop", Auth, createLaptop);
  *           schema:
  *             type: object
  *             properties:
- *               name:
- *                 type: string
- *                 description: The updated name of the laptop
- *               brand:
- *                 type: string
- *                 description: The updated brand of the laptop
- *               price:
- *                 type: number
- *                 description: The updated price of the laptop
+  *                   brand:
+ *                     type: string
+ *                     description: The laptop brand name eg(Apple)
+ *                   model:
+ *                     type: string
+ *                     description: The laptop model
+ *                   serialNumber:
+ *                     type: string
+ *                     description: The laptop unique serial number
+*                   status:
+ *                     type: string
+ *                     description: Enums of (Available, Needs_repair, Distributed e.t.c)
+*                   purchaseDate:
+ *                     type: string
+ *                     description: Purchase date of the laptop
+  *                   note:
+ *                     type: string
+ *                     description: Condition of the laptop
  *     responses:
  *       200:
  *         description: Laptop successfully updated
