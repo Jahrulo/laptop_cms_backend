@@ -48,7 +48,7 @@ export const createLaptop = async (req, res, next) => {
       const messages = Object.values(err.errors).map((err) => err.message);
       return res.status(400).json({
         success: false,
-        message: "Validation failed",
+        message: "❌ Validation failed",
         errors: messages,
       });
     }
@@ -94,7 +94,7 @@ export const updateLaptop = async (req, res, next) => {
       const messages = Object.values(err.errors).map((err) => err.message);
       return res.status(400).json({
         success: false,
-        message: "Validation failed",
+        message: "❌ Validation failed",
         errors: messages,
       });
     }
@@ -127,7 +127,7 @@ export const deleteLaptop = async (req, res, next) => {
       const messages = Object.values(err.errors).map((err) => err.message);
       return res.status(400).json({
         success: false,
-        message: "Validation failed",
+        message: "❌ Validation failed",
         errors: messages,
       });
     }
