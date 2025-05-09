@@ -16,6 +16,7 @@ import laptopRouter from "./routes/laptop.route.js";
 const app = express(); // instantiate express
 
 // middlewares
+app.set("trust proxy", true);
 app.use(express.json()); // parse incoming JSON requests
 app.use(express.urlencoded({ extended: true })); // parse URL-encoded requests
 app.use(cookieParser());
@@ -60,7 +61,7 @@ app.use("/api/v1/laptop", laptopRouter);
 
 // root route
 app.get("/", (req, res) => {
-  res.send("😻Yayyyy api is working");
+  res.send(`😻Yayyyy api is working! Your IP: ${req.ip}`);
 });
 
 // 404 handler (should come before the error middleware)
