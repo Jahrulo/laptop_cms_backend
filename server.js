@@ -12,6 +12,7 @@ import swaggerUi from "swagger-ui-express";
 import swaggerJSDoc from "swagger-jsdoc";
 import { swaggerOptions } from "./docs/swagger.config.js";
 import laptopRouter from "./routes/laptop.route.js";
+import distributeRoute from "./routes/distribution.route.js";
 
 const app = express(); // instantiate express
 
@@ -58,6 +59,7 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 // routes endpoints
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/laptop", laptopRouter);
+app.use("/api/v1/distributions", distributeRoute);
 
 // root route
 app.get("/", (req, res) => {

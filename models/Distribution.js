@@ -38,9 +38,13 @@ const distributionSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
+    status: {
+      type: String,
+      default: "",
+    },
   },
   {
-    timestamps: true, 
+    timestamps: true,
   }
 );
 
