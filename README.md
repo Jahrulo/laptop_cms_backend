@@ -74,41 +74,6 @@ API documentation is available at `/api-docs` when the server is running. This p
 http://localhost:3000/api/v1
 ```
 
-### Authentication Endpoints
-
-#### Register User
-
-```http
-POST /auth/register
-Content-Type: application/json
-
-{
-  "name": "string",
-  "email": "string",
-  "password": "string"
-}
-```
-
-#### Login
-
-```http
-POST /auth/login
-Content-Type: application/json
-
-{
-  "email": "string",
-  "password": "string"
-}
-```
-
-#### Logout
-
-```http
-POST /auth/logout
-Authorization: Bearer <token>
-```
-
-### Laptop Endpoints
 
 #### Get All Laptops
 
