@@ -1,6 +1,6 @@
 # Laptop CMS Backend
 
-A robust and secure Content Management System (CMS) backend for managing laptop data, built with Node.js and Express.
+A robust and secure Content Management System (CMS) backend for tracking and managing laptop inventory. Easily add, edit, assign, and monitor laptops by brand, specs, condition, and user. Ideal for schools, companies, and IT departments, built with Node.js and Express.
 
 ## 🚀 Features
 
