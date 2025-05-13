@@ -11,7 +11,7 @@ const distributeRoute = Router();
 
 /**
  * @swagger
- * /distributions/distribute
+ * /distributions/distribute:
  *   post:
  *     summary: Distribute a laptop to a user.
  *     description: This endpoint allows authorized users to distribute a laptop to a specified user.

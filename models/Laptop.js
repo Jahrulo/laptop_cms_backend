@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { STATUS_ENUM } from "../constants/status.enum.js";
 
 const laptopSchema = new mongoose.Schema({
   brand: { type: String, required: [true, "Brand name is required"] },
@@ -10,7 +11,7 @@ const laptopSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ["Available", "Distributed", "Needs_repair", "Decommissioned"],
+    enum: STATUS_ENUM,
     required: true,
   },
   purchaseDate: {

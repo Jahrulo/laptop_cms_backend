@@ -22,12 +22,10 @@ export const createLaptop = async (req, res, next) => {
     // check if serial number already exists
     const existingSerialNumber = await Laptop.findOne({ serialNumber });
     if (existingSerialNumber) {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          message: "💡 Laptop with this serial number already exists!",
-        });
+      return res.status(400).json({
+        success: false,
+        message: "💡 Laptop with this serial number already exists!",
+      });
     }
 
     // Create a new laptop entry
@@ -41,7 +39,7 @@ export const createLaptop = async (req, res, next) => {
     });
 
     // Send a response with the created laptop
-    return res.status(201).json({ success: true, data: laptop });
+    return res.status(201).json({ success: true, laptop: laptop });
   } catch (err) {
     // Catch Mongoose validation errors
     if (err.name === "ValidationError") {
@@ -62,7 +60,7 @@ export const createLaptop = async (req, res, next) => {
 export const getLaptops = async (req, res, next) => {
   try {
     const laptops = await Laptop.find(); // Fetch all laptops from the database
-    return res.status(200).json({ success: true, data: laptops });
+    return res.status(200).json({ success: true, laptops: laptops });
   } catch (err) {
     console.error(`🚨 Error: ${err.message}`);
     next(err.message);
@@ -87,7 +85,7 @@ export const updateLaptop = async (req, res, next) => {
         .json({ success: false, message: "Laptop not found." });
     }
 
-    return res.status(200).json({ success: true, data: laptop });
+    return res.status(200).json({ success: true, updatedLaptop: laptop });
   } catch (err) {
     // Catch Mongoose validation errors
     if (err.name === "ValidationError") {

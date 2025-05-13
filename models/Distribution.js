@@ -4,8 +4,8 @@ const distributionSchema = new mongoose.Schema(
   {
     laptopId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Laptop", // Reference to the Laptop model
-      required: [true, "Laptop  is required."],
+      ref: "Laptop",
+      required: [true, "Laptop is required."],
     },
     recipientName: {
       type: String,
@@ -25,6 +25,7 @@ const distributionSchema = new mongoose.Schema(
     dateDistributed: {
       type: Date,
       required: [true, "Distribution date is required."],
+      default: Date.now,
     },
     expectedReturnDate: {
       type: Date,
@@ -40,14 +41,46 @@ const distributionSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      default: "",
+      enum: ["Distributed"],
+      default: "Distributed",
     },
   },
   {
     timestamps: true,
+    optimisticConcurrency: true, // Add this for conflict handling
   }
 );
 
-const distribution = mongoose.model("Distribution", distributionSchema);
+// Add hooks with retry logic
+distributionSchema.post("save", async function (doc, next) {
+  try {
+    const Laptop = mongoose.model("Laptop");
+    await retryOperation(async () => {
+      await Laptop.findByIdAndUpdate(
+        doc.laptopId,
+        { status: "Distributed" },
+        { session: doc.$session() }
+      );
+    });
+    next();
+  } catch (err) {
+    next(err);
+  }
+});
 
-export default distribution;
+// Helper function for retrying operations
+async function retryOperation(operation, maxRetries = 3, delay = 100) {
+  let lastError;
+  for (let i = 0; i < maxRetries; i++) {
+    try {
+      return await operation();
+    } catch (error) {
+      lastError = error;
+      if (i < maxRetries - 1)
+        await new Promise((res) => setTimeout(res, delay));
+    }
+  }
+  throw lastError;
+}
+
+export default mongoose.model("Distribution", distributionSchema);

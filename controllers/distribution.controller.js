@@ -1,81 +1,174 @@
-import distribution from "../models/Distribution.js";
+/* eslint-disable no-unused-vars */
+import mongoose from "mongoose";
+import Distribution from "../models/Distribution.js";
+import Laptop from "../models/Laptop.js";
 
-// Create - Distribute a laptop (enhanced version)
+
+async function executeWithRetry(operation, maxRetries = 3) {
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    const session = await mongoose.startSession();
+    try {
+      session.startTransaction();
+      const result = await operation(session);
+      await session.commitTransaction();
+      return result;
+    } catch (error) {
+      await session.abortTransaction();
+      if (attempt === maxRetries) throw error;
+      // Exponential backoff
+      await new Promise((resolve) =>
+        setTimeout(resolve, 100 * Math.pow(2, attempt))
+      );
+    } finally {
+      session.endSession();
+    }
+  }
+}
+
 export const distributeLaptop = async (req, res, next) => {
   try {
-    const {
-      laptopId,
-      recipientName,
-      recipientEmail,
-      recipientPhone,
-      dateDistributed,
-      expectedReturnDate,
-      dateReturned,
-      notes,
-    } = req.body;
+    const result = await executeWithRetry(async (session) => {
+      const {
+        laptopId,
+        recipientName,
+        recipientEmail,
+        recipientPhone,
+        expectedReturnDate,
+        notes,
+      } = req.body;
 
-    // Check if laptop is currently distributed to any recipient (not returned)
-    const existingActiveDistribution = await distribution.findOne({
-      laptopId,
-      $or: [
-        { dateReturned: { $exists: false } },
-        { dateReturned: null },
+      // 1. Verify and lock laptop
+      const laptop = await Laptop.findById(laptopId)
+        .session(session)
+        .select("status")
+        .lean();
+
+      if (!laptop) throw new Error("Laptop not found");
+      if (laptop.status !== "Available") {
+        throw new Error(`Laptop is ${laptop.status}`);
+      }
+
+      // 2. Check for existing distribution
+      const existingDist = await Distribution.findOne({
+        laptopId,
+        dateReturned: null,
+      }).session(session);
+
+      if (existingDist) {
+        throw new Error("Laptop already distributed");
+      }
+
+      // 3. Create distribution and update laptop in single operation
+      const [newDistribution] = await Distribution.create(
+        [
+          {
+            laptopId,
+            recipientName,
+            recipientEmail,
+            recipientPhone,
+            expectedReturnDate,
+            notes: notes || "",
+          },
+        ],
+        { session }
+      );
+
+      await Laptop.findByIdAndUpdate(
+        laptopId,
         { status: "Distributed" },
-      ],
-    });
+        { session }
+      );
 
-    if (existingActiveDistribution) {
-      return res.status(400).json({
-        success: false,
-        message: "This laptop is currently distributed to another recipient.",
-        data: {
-          currentRecipient: existingActiveDistribution.recipientName,
-          distributionDate: existingActiveDistribution.dateDistributed,
-          currentStatus: existingActiveDistribution.status || "Distributed",
-        },
-      });
-    }
-
-    // Create new distribution record
-    const newDistribution = await distribution.create({
-      laptopId,
-      recipientName,
-      recipientEmail,
-      recipientPhone,
-      dateDistributed,
-      expectedReturnDate: expectedReturnDate || null,
-      dateReturned: dateReturned || null,
-      notes: notes || "",
-      status: dateReturned ? "Returned" : "Distributed",
+      return newDistribution;
     });
 
     return res.status(201).json({
       success: true,
       message: "✅ Laptop distributed successfully!",
-      data: newDistribution,
+      data: result,
     });
   } catch (err) {
-    if (err.name === "ValidationError") {
-      const messages = Object.values(err.errors).map((val) => val.message);
-      return res.status(400).json({
-        success: false,
-        message: "❌ Validation failed",
-        errors: messages,
-      });
-    }
-    console.error(`❌ Error distributing laptop: ${err.message}`);
-    next(err);
+    const statusCode = err.message.includes("not found")
+      ? 404
+      : err.message.includes("already")
+      ? 409
+      : 400;
+
+    return res.status(statusCode).json({
+      success: false,
+      message: `❌ ${err.message}`,
+      
+    });
+  
   }
 };
+
+
+// Special operation - Mark laptop as returned
+export const markAsReturned = async (req, res, next) => {
+  try {
+    const result = await executeWithRetry(async (session) => {
+      const { id } = req.params;
+      const { notes } = req.body;
+
+      // 1. Find and lock distribution
+      const distribution = await Distribution.findById(id)
+        .session(session)
+        .select("laptopId dateReturned")
+        .lean();
+
+      if (!distribution) throw new Error("Distribution not found");
+      if (distribution.dateReturned) throw new Error("Already returned");
+
+      // 2. Update both records
+      const updatedDist = await Distribution.findByIdAndUpdate(
+        id,
+        { dateReturned: new Date(), notes: notes || "" },
+        { new: true, session }
+      );
+
+      await Laptop.findByIdAndUpdate(
+        distribution.laptopId,
+        { status: "Available" },
+        { session }
+      );
+
+      return updatedDist;
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "✅ Laptop returned successfully!",
+      data: result,
+    });
+  } catch (err) {
+    const statusCode = err.message.includes("not found")
+      ? 404
+      : err.message.includes("Already")
+      ? 409
+      : 400;
+
+    return res.status(statusCode).json({
+      success: false,
+      message: `❌ ${err.message}`,
+    });
+  
+  }
+};
+
+
+
+
+
 
 // Read - Get all distributions
 export const getAllDistributions = async (req, res, next) => {
   try {
-    const distributions = await distribution.find();
+    const distributions = await Distribution.find();
 
     return res.status(200).json({
       success: true,
-      data: distributions,
+      distribution: distributions,
     });
   } catch (err) {
     console.error(`❌ Error fetching distributions: ${err.message}`);
@@ -86,7 +179,7 @@ export const getAllDistributions = async (req, res, next) => {
 // Read - Get single distribution by ID
 export const getDistributionById = async (req, res, next) => {
   try {
-    const distributionRecord = await distribution.findById(req.params.id);
+    const distributionRecord = await Distribution.findById(req.params.id);
 
     if (!distributionRecord) {
       return res.status(404).json({
@@ -114,7 +207,7 @@ export const getDistributionById = async (req, res, next) => {
 // Read - Get distributions by laptop ID
 export const getDistributionsByLaptopId = async (req, res, next) => {
   try {
-    const distributions = await distribution
+    const distributions = await Distribution
       .find({
         laptopId: req.params.laptopId,
       })
@@ -159,10 +252,10 @@ export const updateDistribution = async (req, res, next) => {
 
     // If dateReturned is being set, update status to "Returned"
     if (updateData.dateReturned) {
-      updateData.status = "Returned";
+      updateData.status = "Available";
     }
 
-    const updatedDistribution = await distribution.findByIdAndUpdate(
+    const updatedDistribution = await Distribution.findByIdAndUpdate(
       id,
       updateData,
       { new: true, runValidators: true }
@@ -178,7 +271,7 @@ export const updateDistribution = async (req, res, next) => {
     return res.status(200).json({
       success: true,
       message: "Distribution record updated successfully!",
-      data: updatedDistribution,
+      updateData: updatedDistribution,
     });
   } catch (err) {
     if (err.name === "ValidationError") {
@@ -197,7 +290,7 @@ export const updateDistribution = async (req, res, next) => {
 // Delete - Delete distribution record
 export const deleteDistribution = async (req, res, next) => {
   try {
-    const deletedDistribution = await distribution.findByIdAndDelete(
+    const deletedDistribution = await Distribution.findByIdAndDelete(
       req.params.id
     );
 
@@ -211,7 +304,7 @@ export const deleteDistribution = async (req, res, next) => {
     return res.status(200).json({
       success: true,
       message: "Distribution record deleted successfully!",
-      data: deletedDistribution,
+      deleted: deletedDistribution,
     });
   } catch (err) {
     if (err.name === "CastError") {
@@ -225,36 +318,4 @@ export const deleteDistribution = async (req, res, next) => {
   }
 };
 
-// Special operation - Mark laptop as returned
-export const markAsReturned = async (req, res, next) => {
-  try {
-    const { id } = req.params;
-    const { notes } = req.body;
 
-    const updatedDistribution = await distribution.findByIdAndUpdate(
-      id,
-      {
-        dateReturned: new Date(),
-        status: "Returned",
-        notes: notes || "",
-      },
-      { new: true }
-    );
-
-    if (!updatedDistribution) {
-      return res.status(404).json({
-        success: false,
-        message: "Distribution record not found.",
-      });
-    }
-
-    return res.status(200).json({
-      success: true,
-      message: "Laptop marked as returned successfully!",
-      data: updatedDistribution,
-    });
-  } catch (err) {
-    console.error(`Error marking laptop as returned: ${err.message}`);
-    next(err);
-  }
-};
